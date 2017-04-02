@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 var express       = require('express');
-var https         = require('https');
+var http          = require('http');
 var body_parser   = require('body-parser');
 var child_process = require('child_process');
 var userid        = require('userid');
@@ -24,6 +24,7 @@ clang_versions.forEach(function(version){
 var app = express();
 app.use(body_parser.json());
 app.use(body_parser.urlencoded({extended: true}));
+app.use(express.static('../client'));
 
 app.post('/format', function(req, res){
 	res.header('Access-Control-Allow-Origin', clang_format_config.url);
@@ -37,14 +38,7 @@ app.get('/doc', function(req, res){
 	get_documentation(req, res);
 });
 
-
-var privateKey = fs.readFileSync(clang_format_config.privKeyPath);
-var certificate = fs.readFileSync(clang_format_config.pubKeyPath);
-
-https.createServer({
-	key: privateKey,
-	cert: certificate
-}, app).listen(clang_format_config.port);
+app.listen(clang_format_config.port);
 
 console.log('Started server.');
 
